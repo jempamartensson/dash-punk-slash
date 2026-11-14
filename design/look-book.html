@@ -1,0 +1,812 @@
+<title>dash-punk-slash Look Book</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the page is a desktop. Each section is a 4Dwm-style window
+   sitting on a slate workspace; the chosen scheme re-colours everything. */
+:root {
+  /* Scheme tokens (Slate, the default). JS swaps these per scheme. */
+  --desk: #4a5a6a;
+  --chrome: #b8b8b4;
+  --hi: #e4e4e0;
+  --lo: #74746c;
+  --text: #161616;
+  --muted: #45453f;
+  --field: #e8e6dc;
+  --sel: #4a5a6a;
+  --selText: #f4f0e4;
+  --wm: #d4a84a;
+  --wmText: #1a1a1a;
+  --wmIdle: #8a949e;
+  --wmIdleText: #1c2026;
+  --accent: #7a4e0c;
+  --viewport: #2a3138;
+  --grid: #3d4752;
+  --deskLine: rgba(255,255,255,.05);
+  /* Fixed IRIX state colours */
+  --iconSel: #f2d33c;
+  --iconDrop: #2f45c4;
+  /* Type */
+  --ui: "Archivo", "Nimbus Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", "Terminus", "DejaVu Sans Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--desk); }
+body {
+  margin: 0;
+  color: var(--text);
+  font: 14px/1.5 var(--ui);
+  background-color: var(--desk);
+  background-image:
+    repeating-linear-gradient(26.565deg, var(--deskLine) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(-26.565deg, var(--deskLine) 0 1px, transparent 1px 28px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px dashed var(--iconSel); outline-offset: 2px; }
+
+.desktop { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+/* Bevels, Motif style */
+.out { border: 2px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi); }
+.in  { border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
+
+/* 4Dwm-ish window */
+.win {
+  background: var(--chrome);
+  border: 1px solid #000;
+  box-shadow: 4px 4px 0 rgba(0,0,0,.28);
+  min-width: 0;
+}
+.win > .frame { border: 3px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi); }
+.titlebar {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--wmIdle); color: var(--wmIdleText);
+  height: 28px; padding: 0 4px;
+  border-bottom: 1px solid #000;
+  font-weight: 600; font-size: 13px; letter-spacing: .02em;
+}
+.win.active .titlebar { background: var(--wm); color: var(--wmText); }
+.titlebar .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 4px; }
+.tb {
+  width: 20px; height: 20px; flex: none;
+  background: var(--chrome);
+  border: 2px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+  display: grid; place-items: center;
+}
+.tb i { display: block; background: var(--text); }
+.tb.menu i { width: 10px; height: 3px; }
+.tb.min i { width: 5px; height: 5px; }
+.tb.max i { width: 11px; height: 11px; background: none; border: 2px solid var(--text); }
+.body { padding: 18px 20px 20px; }
+
+/* Header strip (like the IRIX toolchest) */
+.toolchest {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
+  background: var(--chrome); border: 1px solid #000;
+  box-shadow: 4px 4px 0 rgba(0,0,0,.28);
+  padding: 10px 14px;
+}
+.toolchest h1 { margin: 0; font-size: 20px; letter-spacing: .01em; font-weight: 700; }
+.toolchest h1 span { font-weight: 400; color: var(--muted); }
+.toolchest p { margin: 0; color: var(--muted); flex: 1 1 320px; min-width: 0; }
+.schemepick { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.schemepick label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-right: 4px; }
+.btn {
+  font: 600 13px var(--ui); color: var(--text);
+  background: var(--chrome);
+  border: 2px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+  padding: 4px 12px; cursor: pointer;
+}
+.btn:active, .btn[aria-pressed="true"] { border-color: var(--lo) var(--hi) var(--hi) var(--lo); background: var(--field); }
+
+h2 { font-size: 22px; margin: 0 0 6px; text-wrap: balance; letter-spacing: -.005em; }
+h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .09em; margin: 0 0 8px; color: var(--muted); font-weight: 600; }
+.lede { max-width: 68ch; margin: 0 0 16px; color: var(--text); }
+.mono { font-family: var(--mono); }
+
+/* ---------- usdview mockup ---------- */
+.menubar { display: flex; gap: 2px; padding: 3px 6px; border-bottom: 1px solid var(--lo); flex-wrap: wrap; }
+.menubar span { padding: 2px 8px; font-size: 13px; }
+.menubar span:first-letter { text-decoration: underline; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 6px 8px; border-bottom: 1px solid var(--lo); font-size: 12px; }
+.toolbar .grp { display: flex; gap: 6px; align-items: center; }
+.toolbar select, .toolbar input[type=text] {
+  font: 12px var(--mono); color: var(--text); background: var(--field);
+  border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); padding: 1px 4px;
+}
+.uv {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(0, 2.3fr) minmax(220px, 1.15fr);
+  gap: 6px; padding: 6px;
+}
+.pane { background: var(--chrome); min-width: 0; display: flex; flex-direction: column; }
+.pane > .ph {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .1em; font-weight: 600;
+  padding: 3px 6px; color: var(--muted);
+}
+.well { background: var(--field); border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); flex: 1; min-height: 0; overflow: auto; }
+
+.tree { font: 12px/1.15 var(--mono); }
+.row {
+  display: grid; grid-template-columns: 18px minmax(0,1fr) auto; align-items: center;
+  gap: 4px; padding: 3px 6px 3px 0; cursor: pointer; white-space: nowrap;
+}
+.row:hover { background: color-mix(in srgb, var(--sel) 14%, transparent); }
+.row[aria-selected="true"] { background: var(--sel); color: var(--selText); }
+.row .nm { overflow: hidden; text-overflow: ellipsis; }
+.row .ty { font-size: 11px; opacity: .72; padding-left: 8px; }
+.row .vis {
+  width: 14px; height: 14px; margin-left: 2px; border: 1px solid currentColor; background: transparent; padding: 0; cursor: pointer;
+  color: inherit;
+}
+.row .vis[aria-pressed="true"] { background: currentColor; box-shadow: inset 0 0 0 2px var(--field); }
+.row[aria-selected="true"] .vis[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--sel); }
+.row.hidden .nm { opacity: .45; text-decoration: line-through; }
+.tw { display: inline-block; width: 10px; opacity: .6; }
+
+.vpwrap { position: relative; background: var(--viewport); border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); aspect-ratio: 16 / 10; max-width: 100%; overflow: hidden; }
+.vpwrap svg { width: 100%; height: 100%; display: block; }
+.hud { position: absolute; font: 11px/1.4 var(--mono); color: #d8e0e6; pointer-events: none; text-shadow: 0 1px 0 #000; }
+.hud.tl { top: 6px; left: 8px; }
+.hud.tr { top: 6px; right: 8px; text-align: right; }
+.hud.bl { bottom: 6px; left: 8px; }
+.hud.br { bottom: 6px; right: 8px; text-align: right; color: #f2d33c; }
+
+.props { font: 12px/1.3 var(--mono); width: 100%; border-collapse: collapse; }
+.props td { padding: 3px 6px; border-bottom: 1px solid color-mix(in srgb, var(--lo) 40%, transparent); vertical-align: top; }
+.props td:first-child { color: var(--muted); white-space: nowrap; width: 1%; }
+.props td:last-child { word-break: break-word; }
+.props tr.sec td { background: color-mix(in srgb, var(--lo) 22%, transparent); color: var(--text); font-family: var(--ui); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.props select { font: 12px var(--mono); background: var(--chrome); color: var(--text); border: 2px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi); }
+.arc { display: inline-block; padding: 0 5px; margin-right: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; border: 1px solid currentColor; }
+
+.bottom { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 6px; padding: 0 6px 6px; }
+.layers { font: 12px/1.2 var(--mono); }
+.layers div { display: flex; justify-content: space-between; gap: 8px; padding: 3px 6px; }
+.layers div.edit { background: var(--sel); color: var(--selText); }
+.layers small { opacity: .7; }
+
+.timeline { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px; }
+.timeline .frame { font: 600 13px var(--mono); min-width: 6ch; text-align: center; background: var(--field); padding: 2px 6px; }
+.timeline input[type=range] { flex: 1 1 200px; accent-color: var(--accent); min-width: 0; }
+.thumbwheel {
+  width: 120px; height: 22px; flex: none; cursor: ew-resize; touch-action: none;
+  border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.45), rgba(0,0,0,0) 22%, rgba(255,255,255,.18) 50%, rgba(0,0,0,0) 78%, rgba(0,0,0,.45)),
+    repeating-linear-gradient(90deg, var(--lo) 0 2px, var(--hi) 2px 3px, var(--chrome) 3px 8px);
+}
+.tl-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+
+/* ---------- icons ---------- */
+.icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px; }
+.icon { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: 0; padding: 6px; cursor: pointer; color: var(--text); font: 12px var(--mono); }
+.icon svg { width: 112px; height: 108px; }
+.icon .cap { padding: 0 4px; }
+.icon[aria-pressed="true"] .cap { background: var(--sel); color: var(--selText); }
+.icon small { font: 11px var(--ui); color: var(--muted); text-align: center; max-width: 18ch; }
+.iconwell { background: var(--desk); padding: 16px; border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
+.iconwell .icon { color: #eef2f4; }
+.iconwell .icon small { color: #c8d0d6; }
+
+.states { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 18px; align-items: flex-start; }
+.state { display: flex; flex-direction: column; align-items: center; font-size: 12px; gap: 2px; }
+.state svg { width: 92px; height: 88px; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 28px; margin-top: 18px; }
+.rules p { margin: 0; max-width: 60ch; }
+.rules b { display: block; font-size: 13px; }
+
+/* ---------- schemes ---------- */
+.schemes { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.scheme { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; color: var(--text); font: inherit; }
+.scheme .mini { border: 1px solid #000; box-shadow: 3px 3px 0 rgba(0,0,0,.25); }
+.scheme[aria-pressed="true"] .mini { outline: 3px solid var(--iconSel); outline-offset: 3px; }
+.mini .mt { height: 18px; font: 600 11px var(--ui); padding: 2px 6px; border-bottom: 1px solid #000; }
+.mini .mb { padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mini .desk { height: 34px; grid-column: 1 / -1; }
+.mini .f { height: 18px; font: 11px var(--mono); padding: 1px 4px; }
+.sw { display: flex; gap: 0; margin-top: 8px; }
+.sw span { flex: 1; height: 14px; }
+.scheme h4 { margin: 10px 0 2px; font-size: 15px; }
+.scheme p { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* ---------- notes ---------- */
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px 36px; }
+.cols ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+.cols li { max-width: 62ch; }
+.src { font-size: 12px; color: var(--muted); margin-top: 16px; }
+.src a { color: inherit; }
+code { font: 12.5px var(--mono); background: var(--field); padding: 0 4px; }
+
+@media (max-width: 960px) {
+  .uv { grid-template-columns: 1fr; }
+  .uv .vp { order: -1; }
+  .bottom { grid-template-columns: 1fr; }
+  .tree, .props { max-height: none; }
+}
+@media (max-width: 520px) {
+  .body { padding: 14px 12px 16px; }
+  .thumbwheel { width: 90px; }
+  .menubar span:nth-child(n+5) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="desktop">
+
+  <header class="toolchest">
+    <h1>dash-punk-slash <span>look book</span></h1>
+    <p>A design study for the desktop: IRIX-style isometric icons, four colour schemes, and a restyled usdview to test them on. Pick a scheme and the whole page re-colours.</p>
+    <div class="schemepick" role="group" aria-label="Colour scheme">
+      <label>Scheme</label>
+      <button class="btn" data-scheme="slate" id="sp-slate">Slate</button>
+      <button class="btn" data-scheme="teal" id="sp-teal">Teal</button>
+      <button class="btn" data-scheme="granite" id="sp-granite">Granite</button>
+      <button class="btn" data-scheme="lavender" id="sp-lavender">Lavender</button>
+    </div>
+  </header>
+
+  <!-- ===================== USD VIEWER ===================== -->
+  <section class="win active" aria-labelledby="uv-title">
+    <div class="frame">
+      <div class="titlebar"><span class="tb menu"><i></i></span><span class="t" id="uv-title">usdview — /shots/sq010/sh010/sh010.usda</span><span class="tb min"><i></i></span><span class="tb max"><i></i></span></div>
+      <div class="menubar" aria-hidden="true"><span>File</span><span>Edit</span><span>View</span><span>Stage</span><span>Window</span><span>Render</span><span>Help</span></div>
+      <div class="toolbar">
+        <div class="grp"><span class="tl-label">Camera</span>
+          <select id="cam" aria-label="Camera"><option>shotCam</option><option>Free camera</option></select></div>
+        <div class="grp"><span class="tl-label">Renderer</span>
+          <select id="rd" aria-label="Renderer"><option>Storm</option><option>Embree</option></select></div>
+        <div class="grp"><span class="tl-label">Complexity</span>
+          <select id="cx" aria-label="Complexity"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+        <div class="grp"><span class="tl-label">Find</span>
+          <input type="text" id="find" aria-label="Find prim" placeholder="prim name" size="12"></div>
+      </div>
+
+      <div class="uv">
+        <div class="pane">
+          <div class="ph">Prims</div>
+          <div class="well tree" id="tree" role="tree" aria-label="Stage hierarchy"></div>
+        </div>
+        <div class="pane vp">
+          <div class="ph">Viewport</div>
+          <div class="vpwrap">
+            <svg id="vp" viewBox="-300 -150 600 375" role="img" aria-label="Viewport showing the stage"></svg>
+            <div class="hud tl" id="hudTL"></div>
+            <div class="hud tr" id="hudTR"></div>
+            <div class="hud bl" id="hudBL"></div>
+            <div class="hud br" id="hudBR"></div>
+          </div>
+        </div>
+        <div class="pane">
+          <div class="ph">Properties</div>
+          <div class="well"><table class="props" id="props"></table></div>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="pane">
+          <div class="ph">Layer stack</div>
+          <div class="well layers">
+            <div><span>session</span><small>anon</small></div>
+            <div class="edit"><span>sh010.usda</span><small>edit target</small></div>
+            <div><span>sh010_fx.usda</span><small>sublayer</small></div>
+            <div><span>sq010.usda</span><small>sublayer</small></div>
+            <div><span>robot.usd</span><small>payload</small></div>
+            <div><span>table.usd</span><small>reference</small></div>
+          </div>
+        </div>
+        <div class="pane">
+          <div class="ph">Timeline</div>
+          <div class="well timeline">
+            <button class="btn" id="play" aria-pressed="false">Play</button>
+            <span class="frame" id="frameOut">1042</span>
+            <input type="range" id="frame" min="1001" max="1100" value="1042" aria-label="Frame">
+            <span class="tl-label">Dolly</span>
+            <div class="thumbwheel" id="wheel" role="slider" tabindex="0" aria-label="Camera dolly thumbwheel" aria-valuemin="-40" aria-valuemax="40" aria-valuenow="0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ICONS ===================== -->
+  <section class="win" aria-labelledby="ic-title">
+    <div class="frame">
+      <div class="titlebar"><span class="tb menu"><i></i></span><span class="t" id="ic-title">Icons — isometric file types</span><span class="tb min"><i></i></span><span class="tb max"><i></i></span></div>
+      <div class="body">
+        <h2>Isometric file icons</h2>
+        <p class="lede">These are new icons drawn the way IRIX drew its own. Everything sits on one 2:1 isometric grid, with black outlines, three-tone shading and a drop shadow on a flat base. Click an icon to select it, and it turns yellow, as it did on IRIX.</p>
+        <div class="iconwell"><div class="icons" id="icons"></div></div>
+        <div class="states" id="states" aria-label="Icon states"></div>
+        <div class="rules">
+          <p><b>One projection</b>Horizontal edges rise one unit for every two across, so every icon shares a vanishing logic and they tile together on the desktop.</p>
+          <p><b>Circles mean spheres</b>A circle drawn face-on reads as a ball. IRIX kept circles for spheres, and so does this set. The assistant orb is the only round shape.</p>
+          <p><b>Three tones per material</b>The top face is lightest, the left face is the base colour and the right face is darkest. The light always comes from the upper left.</p>
+          <p><b>State is colour</b>Selected icons turn yellow. A drop target turns royal blue. Open and closed variants come later for folders and packages.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCHEMES ===================== -->
+  <section class="win" aria-labelledby="sc-title">
+    <div class="frame">
+      <div class="titlebar"><span class="tb menu"><i></i></span><span class="t" id="sc-title">Schemes — colour scheme browser</span><span class="tb min"><i></i></span><span class="tb max"><i></i></span></div>
+      <div class="body">
+        <h2>Four schemes</h2>
+        <p class="lede">IRIX coloured every app from about 40 named roles, such as basic background, text field, select fill and active window. We do the same. One small token file per scheme drives Hyprland, waybar, the terminal, the launcher and the Qt apps. Slate is what the step 1 install already ships.</p>
+        <div class="schemes" id="schemes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RESEARCH + PLAN ===================== -->
+  <section class="win" aria-labelledby="nt-title">
+    <div class="frame">
+      <div class="titlebar"><span class="tb menu"><i></i></span><span class="t" id="nt-title">Notes — research and build plan</span><span class="tb min"><i></i></span><span class="tb max"><i></i></span></div>
+      <div class="body">
+        <div class="cols">
+          <div>
+            <h3>What made the IRIX desktop look the way it did</h3>
+            <ul>
+              <li>The <b>Indigo Magic Desktop</b> shipped with IRIX 5.1 on the Indy in 1993. It was renamed the IRIX Interactive Desktop in IRIX 6.5 (1998). It was built on Motif, with the 4Dwm window manager.</li>
+              <li>Icons were <b>vector files</b> (<code>.fti</code>, drawn in IconSmith), all in one isometric view. The design guide says horizontal lines go up 1 unit for every 2 across, and that circles should be kept for spheres.</li>
+              <li>Each icon was built from parts: a generic "magic carpet" base plus a badge, with separate <b>open and closed</b> states. The body used a special white "Icon Color", the lines a special black "Outline Color", and a contrasting "Shadow Color" sat underneath.</li>
+              <li>Icons turned <b>yellow when selected</b> and <b>royal blue</b> when something was dropped on them.</li>
+              <li><b>Schemes</b> drove every colour from about 40 named roles (<code>basicBackground</code>, <code>textFieldBackground</code>, <code>selectFillColor</code>, <code>wMActiveBackground</code>...). IRIX 6.5 came with around 30 schemes, including Lascaux, Rio, Gotham, Milan and Mendocino.</li>
+              <li>The distinctive controls were <b>thumbwheels</b> for continuous values, bevelled Motif buttons, and a red outline while you dragged a window.</li>
+              <li><b>MaXX Interactive Desktop</b> is a living Linux port of this desktop. SGI's own scheme files are under a special licence, so the palettes here are original, not copies.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>How this becomes real</h3>
+            <ul>
+              <li><b>One token file per scheme</b> (<code>themes/slate.toml</code>) is the single source. A small generator writes the Hyprland colours, waybar CSS, foot, fuzzel and mako config, plus a Qt stylesheet and palette for usdview and the other PySide tools.</li>
+              <li><b>usdview</b> is restyled inside our USD rez package. Usdviewq ships its own Qt stylesheet, and we swap it for the generated one. A small usdview plugin adds the scheme switcher. The thumbwheel dolly is a stretch goal.</li>
+              <li><b>Icons</b> are SVGs built from this page's isometric generator. They get packaged as a freedesktop icon theme, with MIME types for <code>.usd .usda .usdc .usdz .vdb .exr .abc</code> and rez packages.</li>
+              <li><b>Fonts:</b> Terminus in the shells and a Helvetica-style UI font, Nimbus Sans (a free Helvetica metric clone), in panels.</li>
+              <li><b>Viewport:</b> Hydra Storm on the Radeon 8060S via OpenGL. Whether it works well is checked on the real machine in step 2.</li>
+            </ul>
+            <h3 style="margin-top:18px">Your call</h3>
+            <ul>
+              <li>Which scheme should be the default? Slate, Teal, Granite or Lavender, or a mix.</li>
+              <li>Should the icons look like this (flat, three tones) or be more detailed, with gradients like late IRIX?</li>
+              <li>What else should get icons first? Houdini <code>.hip</code>, Nuke <code>.nk</code>, Alembic, render jobs?</li>
+            </ul>
+          </div>
+        </div>
+        <p class="src">Sources:
+          <a href="https://en.wikipedia.org/wiki/IRIX_Interactive_Desktop">IRIX Interactive Desktop (Wikipedia)</a> ·
+          <a href="https://tech-pubs.net/sgi_developer/books/007-2006-130/ch03.html">SGI Integration Guide, Using Schemes</a> ·
+          <a href="https://www.tech-pubs.net/sgi_developer/books/007-2006-130/ch11.html">ch. 11, icons</a> ·
+          <a href="https://www.tech-pubs.net/sgi_developer/books/007-2006-130/ch12.html">ch. 12, IconSmith</a> ·
+          <a href="https://tech-pubs.net/SGI_EndUser/books/Desktop_UG/sgi_html/ch11.html">Desktop User's Guide, ch. 11</a> ·
+          <a href="https://docs.maxxinteractive.com/books/customization/page/schemes-and-themes">MaXX schemes and themes</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+"use strict";
+const NS = "http://www.w3.org/2000/svg";
+
+/* ---------------- schemes ---------------- */
+const SCHEMES = {
+  slate: { name: "Slate", blurb: "Slate workspace, warm grey chrome and a gold focus frame. Calm for long sessions.", dark: false,
+    v: { desk:"#4a5a6a", chrome:"#b8b8b4", hi:"#e4e4e0", lo:"#74746c", text:"#161616", muted:"#45453f", field:"#e8e6dc", sel:"#4a5a6a", selText:"#f4f0e4", wm:"#d4a84a", wmText:"#1a1a1a", wmIdle:"#8a949e", wmIdleText:"#1c2026", accent:"#7a4e0c", viewport:"#2a3138", grid:"#3d4752", deskLine:"rgba(255,255,255,.05)" } },
+  teal: { name: "Teal", blurb: "Blue-green chrome with a deep teal workspace. The most period-feeling of the four.", dark: false,
+    v: { desk:"#2c5b5f", chrome:"#b6c3c1", hi:"#e6eeec", lo:"#687a77", text:"#0f1f1e", muted:"#3a4e4c", field:"#e9f0ee", sel:"#2c6a6d", selText:"#f2fbf9", wm:"#58a9a4", wmText:"#062220", wmIdle:"#8a9b99", wmIdleText:"#142321", accent:"#155f5b", viewport:"#1f2b2c", grid:"#33494a", deskLine:"rgba(255,255,255,.05)" } },
+  granite: { name: "Granite", blurb: "Dark chrome with ivory text and a gold selection. Kinder to the eyes in a dark grading room.", dark: true,
+    v: { desk:"#1b2026", chrome:"#383f48", hi:"#58616c", lo:"#1c2025", text:"#ebe6d9", muted:"#aba596", field:"#252a30", sel:"#c9a24a", selText:"#17150f", wm:"#647a92", wmText:"#f4f1e8", wmIdle:"#424a54", wmIdleText:"#b8b4a8", accent:"#e2bd66", viewport:"#15191d", grid:"#2a3139", deskLine:"rgba(255,255,255,.035)" } },
+  lavender: { name: "Lavender", blurb: "Pale violet chrome with crisp white fields. Highest contrast for reading data.", dark: false,
+    v: { desk:"#77719a", chrome:"#d6d4df", hi:"#f7f6fb", lo:"#918da6", text:"#121018", muted:"#48445a", field:"#ffffff", sel:"#3b3080", selText:"#ffffff", wm:"#5b50a2", wmText:"#ffffff", wmIdle:"#aeaabf", wmIdleText:"#25213a", accent:"#3b3080", viewport:"#24222e", grid:"#38354a", deskLine:"rgba(255,255,255,.07)" } },
+};
+
+function applyScheme(key) {
+  const s = SCHEMES[key] || SCHEMES.slate;
+  const r = document.documentElement;
+  for (const [k, val] of Object.entries(s.v)) r.style.setProperty("--" + k, val);
+  r.style.colorScheme = s.dark ? "dark" : "light";
+  document.querySelectorAll("[data-scheme]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.scheme === key)));
+  try { localStorage.setItem("dps-scheme", key); } catch (e) {}
+  renderViewport();
+}
+
+const schemesEl = document.getElementById("schemes");
+for (const [key, s] of Object.entries(SCHEMES)) {
+  const v = s.v;
+  const b = document.createElement("button");
+  b.className = "scheme"; b.dataset.scheme = key; b.id = "scheme-" + key;
+  b.innerHTML = `
+    <div class="mini" style="background:${v.chrome};color:${v.text}">
+      <div class="mt" style="background:${v.wm};color:${v.wmText}">winterm</div>
+      <div class="mb">
+        <div class="desk" style="background:${v.desk}"></div>
+        <div class="f" style="background:${v.field};border:2px solid;border-color:${v.lo} ${v.hi} ${v.hi} ${v.lo}">text</div>
+        <div class="f" style="background:${v.sel};color:${v.selText}">selected</div>
+        <div class="f" style="background:${v.chrome};border:2px solid;border-color:${v.hi} ${v.lo} ${v.lo} ${v.hi};text-align:center;font-family:var(--ui);font-weight:600">OK</div>
+        <div class="f" style="background:${v.wmIdle};color:${v.wmIdleText}">inactive</div>
+      </div>
+    </div>
+    <div class="sw">${["desk","chrome","field","sel","wm","accent"].map(t => `<span title="${t} ${v[t]}" style="background:${v[t]}"></span>`).join("")}</div>
+    <h4>${s.name}</h4><p>${s.blurb}</p>`;
+  schemesEl.appendChild(b);
+}
+document.querySelectorAll("[data-scheme]").forEach(b => b.addEventListener("click", () => applyScheme(b.dataset.scheme)));
+
+/* ---------------- isometric engine ---------------- */
+function hexToRgb(h) { h = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function shade(h, f) { // f > 0 lighten, < 0 darken
+  const c = hexToRgb(h).map(x => f >= 0 ? x + (255 - x) * f : x * (1 + f));
+  return "#" + c.map(x => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, "0")).join("");
+}
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function makeIso(S, ox = 0, oy = 0) {
+  const P = (x, y, z) => [ox + (x - y) * S, oy + (x + y) * S / 2 - z * S];
+  const pts = a => a.map(p => P(...p).map(n => n.toFixed(2)).join(",")).join(" ");
+  function box(g, x, y, z, w, d, h, col, o = {}) {
+    const sw = o.sw ?? 1.1, stroke = o.stroke ?? "#0b0b0b";
+    const top = shade(col, .32), left = col, right = shade(col, -.32);
+    const x1 = x + w, y1 = y + d, z1 = z + h;
+    el("polygon", { points: pts([[x, y1, z], [x1, y1, z], [x1, y1, z1], [x, y1, z1]]), fill: left, stroke, "stroke-width": sw, "stroke-linejoin": "round" }, g);
+    el("polygon", { points: pts([[x1, y, z], [x1, y1, z], [x1, y1, z1], [x1, y, z1]]), fill: right, stroke, "stroke-width": sw, "stroke-linejoin": "round" }, g);
+    el("polygon", { points: pts([[x, y, z1], [x1, y, z1], [x1, y1, z1], [x, y1, z1]]), fill: top, stroke, "stroke-width": sw, "stroke-linejoin": "round" }, g);
+  }
+  function quad(g, corners, fill, o = {}) {
+    return el("polygon", { points: pts(corners), fill, stroke: o.stroke ?? "#0b0b0b", "stroke-width": o.sw ?? 1, "stroke-linejoin": "round" }, g);
+  }
+  // affine matrix that maps text drawn in (u = +x, v = -z) onto the +y face plane
+  const faceY = (x, y, z) => { const [e, f] = P(x, y, z); return `matrix(${S},${S / 2},0,${S},${e},${f})`; };
+  return { P, pts, box, quad, faceY };
+}
+
+/* ---------------- icons ---------------- */
+const STATE_COL = { sel: "#f2d33c", drop: "#2f45c4" };
+let gradId = 0;
+
+function carpet(iso, g) {
+  // drop shadow + flat "magic carpet" base
+  const c = [[-0.6, -0.6, 0], [8.6, -0.6, 0], [8.6, 8.6, 0], [-0.6, 8.6, 0]];
+  const sh = iso.quad(g, c, "rgba(0,0,0,.38)", { stroke: "none" });
+  sh.setAttribute("transform", "translate(4,4)");
+  iso.box(g, -0.6, -0.6, -0.5, 9.2, 9.2, 0.5, "#9aa0a6", { sw: 1 });
+}
+
+const ICONS = [
+  { id: "usd", file: "sh010.usda", note: "USD stage (layer stack)", draw(iso, g, st) {
+      const c = st ? [STATE_COL[st], STATE_COL[st], STATE_COL[st]] : ["#8e979f", "#3f9a96", "#e0863a"];
+      iso.box(g, 1, 1, 0, 6, 6, 1.3, c[0]);
+      iso.box(g, 1, 1, 2.3, 6, 6, 1.3, c[1]);
+      iso.box(g, 1, 1, 4.6, 6, 6, 1.3, c[2]);
+      // ruled lines on the top layer = text
+      for (let i = 0; i < 3; i++) iso.quad(g, [[2, 2.2 + i * 1.4, 5.92], [5.6 - i * .8, 2.2 + i * 1.4, 5.92], [5.6 - i * .8, 2.7 + i * 1.4, 5.92], [2, 2.7 + i * 1.4, 5.92]], st ? "#00000055" : "#7a3a0a", { sw: 0, stroke: "none" });
+  } },
+  { id: "vdb", file: "smoke.1042.vdb", note: "OpenVDB volume", draw(iso, g, st) {
+      const vox = [];
+      for (let x = 0; x < 4; x++) for (let y = 0; y < 4; y++) for (let z = 0; z < 4; z++) {
+        const dx = x - 1.5, dy = y - 1.5, dz = z - 1.3;
+        if (dx * dx + dy * dy + dz * dz * 1.1 < 4.2 && !(x === 3 && y === 0 && z === 3)) vox.push([x, y, z]);
+      }
+      vox.sort((a, b) => (a[0] + a[1] - a[2] * .01) - (b[0] + b[1] - b[2] * .01) || a[2] - b[2]);
+      vox.forEach(([x, y, z]) => {
+        const d = 1 - (Math.abs(x - 1.5) + Math.abs(y - 1.5) + Math.abs(z - 1.5)) / 6;
+        const col = st ? STATE_COL[st] : shade("#7aa6d6", d * .45 - .05);
+        iso.box(g, .6 + x * 1.75, .6 + y * 1.75, z * 1.75, 1.75, 1.75, 1.75, col, { sw: .8 });
+      });
+  } },
+  { id: "exr", file: "beauty.1042.exr", note: "OpenEXR image + AOVs", draw(iso, g, st) {
+      const back = st ? [STATE_COL[st], STATE_COL[st]] : ["#3e7bd1", "#4aa860"];
+      iso.box(g, 2.2, 1, 0.4, 5.6, .5, 6.4, back[0]);
+      iso.box(g, 1.6, 3, 0.2, 5.6, .5, 6.4, back[1]);
+      iso.box(g, 1, 5, 0, 5.6, .5, 6.4, st ? STATE_COL[st] : "#d24a3c");
+      // the image on the front face
+      const id = "exrg" + (gradId++);
+      const defs = el("defs", {}, g);
+      const lg = el("linearGradient", { id, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+      [["0", st ? STATE_COL[st] : "#1d2a5c"], [".55", st ? shade(STATE_COL[st], .4) : "#e0784a"], [".56", st ? shade(STATE_COL[st], -.2) : "#2d2a26"], ["1", st ? shade(STATE_COL[st], -.3) : "#4a3d2f"]]
+        .forEach(([o, c]) => el("stop", { offset: o, "stop-color": c }, lg));
+      iso.quad(g, [[1.5, 5.5, .6], [6.1, 5.5, .6], [6.1, 5.5, 5.8], [1.5, 5.5, 5.8]], `url(#${id})`, { sw: .9 });
+      // sun
+      const sun = el("g", { transform: iso.faceY(1.5, 5.5, 5.8) }, g);
+      el("ellipse", { cx: 2.8, cy: 2.5, rx: .8, ry: .8, fill: st ? "#fff8" : "#ffd36a" }, sun);
+  } },
+  { id: "rez", file: "openvdb-12.1.0", note: "rez package", draw(iso, g, st) {
+      const c = st ? STATE_COL[st] : "#c79a5e";
+      iso.box(g, 1, 1, 0, 6, 6, 4.6, c);
+      // tape across the top and down the front
+      const tape = st ? shade(c, .5) : "#efe2b8";
+      iso.quad(g, [[3.4, 1, 4.6], [4.6, 1, 4.6], [4.6, 7, 4.6], [3.4, 7, 4.6]], tape, { sw: .7 });
+      iso.quad(g, [[3.4, 7, 4.6], [4.6, 7, 4.6], [4.6, 7, 2.8], [3.4, 7, 2.8]], shade(tape, -.1), { sw: .7 });
+      const t = el("g", { transform: iso.faceY(1, 7, 4.6) }, g);
+      el("text", { x: .5, y: 3.6, "font-size": 1.25, "font-family": "IBM Plex Mono, monospace", "font-weight": 500, fill: "#2a1a08" }, t).textContent = "rez";
+  } },
+  { id: "shell", file: "winterm", note: "Shell", draw(iso, g, st) {
+      const c = st ? STATE_COL[st] : "#b8b8b4";
+      iso.box(g, 1, 3.6, 0, 6.4, 3.4, 5.6, c);
+      iso.box(g, 2.2, 1.2, 0, 4, 2.4, 3.4, shade(c, -.12));
+      iso.quad(g, [[1.6, 7, 1], [6.8, 7, 1], [6.8, 7, 5], [1.6, 7, 5]], st ? "#0d1a3f" : "#0f1b16", { sw: .9 });
+      const t = el("g", { transform: iso.faceY(1.6, 7, 5) }, g);
+      el("text", { x: .5, y: 1.9, "font-size": 1.5, "font-family": "IBM Plex Mono, monospace", "font-weight": 500, fill: "#7fe08a" }, t).textContent = ">_";
+  } },
+  { id: "agent", file: "assistant", note: "Local AI assistant", draw(iso, g, st) {
+      const ped = st ? STATE_COL[st] : "#8e979f";
+      iso.box(g, 1.6, 1.6, 0, 4.8, 4.8, 1.8, ped);
+      const id = "orb" + (gradId++);
+      const defs = el("defs", {}, g);
+      const rg = el("radialGradient", { id, cx: .36, cy: .32, r: .75 }, defs);
+      const base = st ? STATE_COL[st] : "#8a5ad0";
+      [["0", shade(base, .75)], [".45", base], ["1", shade(base, -.55)]].forEach(([o, c]) => el("stop", { offset: o, "stop-color": c }, rg));
+      const [cx, cy] = iso.P(4, 4, 5.2);
+      el("ellipse", { cx: iso.P(4, 4, 1.8)[0], cy: iso.P(4, 4, 1.8)[1], rx: 14, ry: 5, fill: "rgba(0,0,0,.35)" }, g);
+      el("circle", { cx, cy, r: 17, fill: `url(#${id})`, stroke: "#0b0b0b", "stroke-width": 1.1 }, g);
+  } },
+];
+
+function iconSVG(icon, st, size = 6) {
+  const svg = el("svg", { viewBox: "-58 -60 116 116", "aria-hidden": "true" });
+  const iso = makeIso(size, 0, 0);
+  const g = el("g", {}, svg);
+  carpet(iso, g);
+  icon.draw(iso, g, st);
+  return svg;
+}
+
+const iconsEl = document.getElementById("icons");
+ICONS.forEach(ic => {
+  const b = document.createElement("button");
+  b.className = "icon"; b.id = "icon-" + ic.id; b.setAttribute("aria-pressed", "false");
+  b.appendChild(iconSVG(ic, null));
+  const cap = document.createElement("span"); cap.className = "cap"; cap.textContent = ic.file; b.appendChild(cap);
+  const sm = document.createElement("small"); sm.textContent = ic.note; b.appendChild(sm);
+  b.addEventListener("click", () => {
+    const on = b.getAttribute("aria-pressed") !== "true";
+    b.setAttribute("aria-pressed", String(on));
+    b.replaceChild(iconSVG(ic, on ? "sel" : null), b.querySelector("svg"));
+  });
+  iconsEl.appendChild(b);
+});
+
+const statesEl = document.getElementById("states");
+[["Normal", null], ["Selected", "sel"], ["Drop target", "drop"]].forEach(([label, st]) => {
+  const d = document.createElement("div"); d.className = "state";
+  d.appendChild(iconSVG(ICONS[3], st));
+  const s = document.createElement("span"); s.textContent = label; d.appendChild(s);
+  statesEl.appendChild(d);
+});
+
+/* ---------------- usdview ---------------- */
+const STAGE = [
+  { p: "/World", t: "Xform", kind: "assembly" },
+  { p: "/World/Set", t: "Xform", kind: "group" },
+  { p: "/World/Set/Floor", t: "Mesh" },
+  { p: "/World/Set/Table", t: "Mesh", kind: "component", arcs: [["reference", "@table.usd@</Table>"]] },
+  { p: "/World/Chars", t: "Xform", kind: "group" },
+  { p: "/World/Chars/Robot", t: "Xform", kind: "component", arcs: [["payload", "@robot.usd@</Robot>"]], variant: true },
+  { p: "/World/Chars/Robot/Body", t: "Mesh" },
+  { p: "/World/Chars/Robot/Head", t: "Mesh" },
+  { p: "/World/FX", t: "Scope" },
+  { p: "/World/FX/Smoke", t: "Volume", arcs: [["sublayer", "sh010_fx.usda"]] },
+  { p: "/World/FX/Smoke/density", t: "OpenVDBAsset" },
+  { p: "/Cameras", t: "Scope" },
+  { p: "/Cameras/shotCam", t: "Camera" },
+  { p: "/Looks", t: "Scope" },
+  { p: "/Looks/MtlRobot", t: "Material" },
+];
+const state = { sel: "/World/Chars/Robot", hidden: new Set(), lod: "high", frame: 1042, dolly: 0, collapsed: new Set(["/Looks"]) };
+
+const depth = p => p.split("/").length - 2;
+const name = p => p.split("/").pop();
+const parentOf = p => p.slice(0, p.lastIndexOf("/")) || null;
+const hasKids = p => STAGE.some(s => parentOf(s.p) === p);
+const isHidden = p => [...state.hidden].some(h => p === h || p.startsWith(h + "/"));
+const isCollapsedOut = p => [...state.collapsed].some(c => p.startsWith(c + "/"));
+
+function renderTree() {
+  const tree = document.getElementById("tree");
+  const q = document.getElementById("find").value.trim().toLowerCase();
+  tree.innerHTML = "";
+  STAGE.forEach(s => {
+    if (!q && isCollapsedOut(s.p)) return;
+    if (q && !name(s.p).toLowerCase().includes(q)) return;
+    const r = document.createElement("div");
+    r.className = "row" + (isHidden(s.p) ? " hidden" : "");
+    r.setAttribute("role", "treeitem");
+    r.setAttribute("aria-selected", String(state.sel === s.p));
+    r.tabIndex = 0;
+    const vis = document.createElement("button");
+    vis.className = "vis"; vis.setAttribute("aria-pressed", String(!state.hidden.has(s.p)));
+    vis.setAttribute("aria-label", "Toggle visibility of " + name(s.p));
+    vis.addEventListener("click", e => {
+      e.stopPropagation();
+      state.hidden.has(s.p) ? state.hidden.delete(s.p) : state.hidden.add(s.p);
+      renderAll();
+    });
+    const nm = document.createElement("span"); nm.className = "nm";
+    const tw = hasKids(s.p) ? (state.collapsed.has(s.p) ? "▸" : "▾") : "";
+    nm.style.paddingLeft = (q ? 0 : depth(s.p) * 12) + "px";
+    nm.innerHTML = `<span class="tw">${tw}</span>${name(s.p)}`;
+    if (tw) nm.querySelector(".tw").addEventListener("click", e => {
+      e.stopPropagation();
+      state.collapsed.has(s.p) ? state.collapsed.delete(s.p) : state.collapsed.add(s.p);
+      renderTree();
+    });
+    const ty = document.createElement("span"); ty.className = "ty"; ty.textContent = s.t;
+    r.append(vis, nm, ty);
+    const pick = () => { state.sel = s.p; renderAll(); document.querySelector(`#tree .row[aria-selected="true"]`)?.focus(); };
+    r.addEventListener("click", pick);
+    r.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const rows = [...tree.querySelectorAll(".row")]; const i = rows.indexOf(r);
+        rows[Math.max(0, Math.min(rows.length - 1, i + (e.key === "ArrowDown" ? 1 : -1)))]?.focus();
+      }
+    });
+    tree.appendChild(r);
+  });
+}
+
+function propsFor(s) {
+  const rows = [["sec", "Prim"], ["path", s.p], ["type", s.t]];
+  if (s.kind) rows.push(["kind", s.kind]);
+  rows.push(["visibility", isHidden(s.p) ? "invisible" : "inherited"]);
+  rows.push(["purpose", s.t === "Mesh" && s.p.includes("Robot") && state.lod === "low" ? "proxy" : "default"]);
+  if (s.arcs) { rows.push(["sec", "Composition"]); s.arcs.forEach(([k, v]) => rows.push(["arc", `<span class="arc">${k}</span>${v}`])); }
+  if (s.variant) { rows.push(["sec", "Variant sets"]); rows.push(["lod", `<select id="lodSel" aria-label="lod variant"><option value="high"${state.lod === "high" ? " selected" : ""}>high</option><option value="low"${state.lod === "low" ? " selected" : ""}>low</option></select>`]); }
+  rows.push(["sec", "Attributes"]);
+  const f = state.frame;
+  const T = {
+    "/World/Chars/Robot": [["xformOp:translate", `(${(1.2 + (f - 1001) * .01).toFixed(3)}, 0, -0.4)`], ["xformOp:rotateY", `${((f - 1001) * 1.5).toFixed(1)}`], ["extent", "[(-0.6,0,-0.5), (0.6,2.1,0.5)]"]],
+    "/World/FX/Smoke": [["field:density", "/World/FX/Smoke/density"], ["extent", "[(-1.5,0,-1.5), (1.5,3.2,1.5)]"]],
+    "/World/FX/Smoke/density": [["filePath", `@smoke.${f}.vdb@`], ["fieldName", "density"], ["fieldDataType", "float"]],
+    "/Cameras/shotCam": [["focalLength", "35"], ["fStop", "2.8"], ["focusDistance", (8.4 - state.dolly * .05).toFixed(2)], ["clippingRange", "(0.1, 10000)"]],
+    "/World/Set/Table": [["extent", "[(-1,0,-0.6), (1,0.75,0.6)]"], ["primvars:displayColor", "[(0.52, 0.36, 0.22)]"]],
+    "/Looks/MtlRobot": [["outputs:surface", "</Looks/MtlRobot/PBR.outputs:surface>"], ["diffuseColor", "(0.8, 0.45, 0.12)"]],
+  };
+  (T[s.p] || [["points", s.t === "Mesh" ? "8 pts" : "—"], ["extent", s.t === "Mesh" ? "computed" : "—"]]).forEach(r => rows.push(r));
+  return rows;
+}
+
+function renderProps() {
+  const s = STAGE.find(x => x.p === state.sel);
+  const t = document.getElementById("props");
+  t.innerHTML = propsFor(s).map(([k, v]) => k === "sec"
+    ? `<tr class="sec"><td colspan="2">${v}</td></tr>`
+    : `<tr><td>${k === "arc" ? "" : k}</td><td>${v}</td></tr>`).join("");
+  const lod = document.getElementById("lodSel");
+  if (lod) lod.addEventListener("change", () => { state.lod = lod.value; renderAll(); });
+}
+
+/* viewport */
+function renderViewport() {
+  const svg = document.getElementById("vp");
+  if (!svg) return;
+  const css = getComputedStyle(document.documentElement);
+  const gridCol = css.getPropertyValue("--grid").trim() || "#3d4752";
+  const zoom = 13 + state.dolly * .1;
+  const iso = makeIso(zoom, 0, 45);
+  svg.innerHTML = "";
+  // floor grid
+  const g0 = el("g", {}, svg);
+  for (let i = -8; i <= 8; i++) {
+    const a = iso.P(i, -8, 0), b = iso.P(i, 8, 0), c = iso.P(-8, i, 0), d = iso.P(8, i, 0);
+    el("line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: gridCol, "stroke-width": i === 0 ? 1.6 : .8 }, g0);
+    el("line", { x1: c[0], y1: c[1], x2: d[0], y2: d[1], stroke: gridCol, "stroke-width": i === 0 ? 1.6 : .8 }, g0);
+  }
+  const f = state.frame;
+  const t = (f - 1001) / 99;
+  const items = [];
+  const add = (path, x, y, z, w, d, h, col) => items.push({ path, x, y, z, w, d, h, col });
+  // table
+  add("/World/Set/Table", -6, -4, 0, .5, .5, 3, "#6b4a2c"); add("/World/Set/Table", -2.5, -4, 0, .5, .5, 3, "#6b4a2c");
+  add("/World/Set/Table", -6, -1.5, 0, .5, .5, 3, "#6b4a2c"); add("/World/Set/Table", -2.5, -1.5, 0, .5, .5, 3, "#6b4a2c");
+  add("/World/Set/Table", -6.3, -4.3, 3, 4.6, 3.1, .5, "#86603c");
+  // robot
+  const rx = -1 + t * 5, ry = 1;
+  if (state.lod === "high") {
+    add("/World/Chars/Robot/Body", rx + .3, ry + .6, 0, .7, .7, 2.2, "#8b9097"); add("/World/Chars/Robot/Body", rx + 1.6, ry + .6, 0, .7, .7, 2.2, "#8b9097");
+    add("/World/Chars/Robot/Body", rx, ry, 2.2, 2.6, 1.9, 3, "#d27a2e");
+    add("/World/Chars/Robot/Body", rx - .7, ry + .6, 3, .7, .7, 2, "#8b9097"); add("/World/Chars/Robot/Body", rx + 2.6, ry + .6, 3, .7, .7, 2, "#8b9097");
+    add("/World/Chars/Robot/Head", rx + .45, ry + .3, 5.2, 1.7, 1.4, 1.5, "#c9ccd0");
+  } else {
+    add("/World/Chars/Robot/Body", rx, ry, 0, 2.6, 1.9, 5.2, "#d27a2e");
+    add("/World/Chars/Robot/Head", rx + .45, ry + .3, 5.2, 1.7, 1.4, 1.5, "#c9ccd0");
+  }
+  // smoke voxels, drifting with frame
+  for (let x = 0; x < 4; x++) for (let y = 0; y < 3; y++) for (let z = 0; z < 4; z++) {
+    const n = Math.sin(x * 12.9 + y * 78.2 + z * 37.7) * 43758.5; const r = n - Math.floor(n);
+    if (r > .55 - z * .06) continue;
+    const drift = Math.sin(f * .08 + x + z) * .4;
+    add("/World/FX/Smoke/density", 4 + x * 1.1 + drift, -6 + y * 1.1, 1 + z * 1.1 + t * 2, 1.1, 1.1, 1.1, shade("#9fb6cc", (z / 4) * .5 - .1));
+  }
+  items.sort((a, b) => (a.x + a.w / 2 + a.y + a.d / 2 + a.z * .2) - (b.x + b.w / 2 + b.y + b.d / 2 + b.z * .2));
+  const g = el("g", {}, svg);
+  let drawn = 0;
+  items.forEach(it => {
+    if (isHidden(it.path)) return;
+    const selected = it.path === state.sel || it.path.startsWith(state.sel + "/") || (state.sel === "/World/FX/Smoke" && it.path.startsWith("/World/FX"));
+    iso.box(g, it.x, it.y, it.z, it.w, it.d, it.h, it.col, { stroke: selected ? "#f2d33c" : "#0b0b0b", sw: selected ? 1.8 : .7 });
+    drawn++;
+  });
+  // camera frustum
+  if (!isHidden("/Cameras/shotCam")) {
+    const cs = state.sel === "/Cameras/shotCam";
+    const c = iso.P(8, 8, 4), corners = [iso.P(4, 6, 2), iso.P(6, 4, 2), iso.P(6, 4, 5), iso.P(4, 6, 5)];
+    const gc = el("g", { stroke: cs ? "#f2d33c" : "#b6c0c8", "stroke-width": cs ? 1.6 : 1, fill: "none" }, svg);
+    corners.forEach(k => el("line", { x1: c[0], y1: c[1], x2: k[0], y2: k[1] }, gc));
+    el("polygon", { points: corners.map(k => k.join(",")).join(" ") }, gc);
+  }
+  // axis gizmo
+  const ax = el("g", { transform: "translate(-270,195)", "stroke-width": 2 }, svg);
+  el("line", { x1: 0, y1: 0, x2: 18, y2: 9, stroke: "#e0584a" }, ax);
+  el("line", { x1: 0, y1: 0, x2: 0, y2: -20, stroke: "#5ac06a" }, ax);
+  el("line", { x1: 0, y1: 0, x2: -18, y2: 9, stroke: "#5a8ae0" }, ax);
+
+  document.getElementById("hudTL").innerHTML = `Prims: ${STAGE.length - state.hidden.size} · Drawn: ${drawn}<br>Renderer: ${document.getElementById("rd").value} (GL)`;
+  document.getElementById("hudTR").innerHTML = `Camera: ${document.getElementById("cam").value}<br>Complexity: ${document.getElementById("cx").value}`;
+  document.getElementById("hudBL").innerHTML = `Frame ${f} · 24 fps<br>GPU: Radeon 8060S`;
+  document.getElementById("hudBR").textContent = state.sel;
+}
+
+function renderAll() { renderTree(); renderProps(); renderViewport(); }
+
+["cam", "rd", "cx"].forEach(id => document.getElementById(id).addEventListener("change", renderViewport));
+document.getElementById("find").addEventListener("input", renderTree);
+
+const frameIn = document.getElementById("frame"), frameOut = document.getElementById("frameOut");
+function setFrame(v) {
+  state.frame = Math.max(1001, Math.min(1100, Math.round(v)));
+  frameIn.value = state.frame; frameOut.textContent = state.frame;
+  renderProps(); renderViewport();
+}
+frameIn.addEventListener("input", () => setFrame(+frameIn.value));
+let timer = null;
+const play = document.getElementById("play");
+play.addEventListener("click", () => {
+  if (timer) { clearInterval(timer); timer = null; play.textContent = "Play"; play.setAttribute("aria-pressed", "false"); return; }
+  play.textContent = "Stop"; play.setAttribute("aria-pressed", "true");
+  timer = setInterval(() => setFrame(state.frame >= 1100 ? 1001 : state.frame + 1), 1000 / 24);
+});
+
+// thumbwheel: drag sideways to dolly the camera
+const wheel = document.getElementById("wheel");
+let wx = null, wpos = 0;
+function setDolly(v) {
+  state.dolly = Math.max(-40, Math.min(40, v));
+  wheel.setAttribute("aria-valuenow", String(Math.round(state.dolly)));
+  renderViewport(); if (state.sel === "/Cameras/shotCam") renderProps();
+}
+wheel.addEventListener("pointerdown", e => { wx = e.clientX; wheel.setPointerCapture(e.pointerId); });
+wheel.addEventListener("pointermove", e => {
+  if (wx === null) return;
+  const dx = e.clientX - wx; wx = e.clientX; wpos += dx;
+  wheel.style.backgroundPosition = `0 0, ${wpos}px 0`;
+  setDolly(state.dolly + dx * .25);
+});
+["pointerup", "pointercancel"].forEach(t => wheel.addEventListener(t, () => { wx = null; }));
+wheel.addEventListener("keydown", e => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  e.preventDefault(); const d = e.key === "ArrowRight" ? 2 : -2; wpos += d * 4;
+  wheel.style.backgroundPosition = `0 0, ${wpos}px 0`; setDolly(state.dolly + d);
+});
+
+let saved = "slate";
+try { saved = localStorage.getItem("dps-scheme") || "slate"; } catch (e) {}
+renderTree(); renderProps();
+applyScheme(SCHEMES[saved] ? saved : "slate");
+})();
+</script>
