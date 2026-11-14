@@ -1,0 +1,22 @@
+# Core CLI tools. One package per line, comments allowed.
+base-devel
+git
+curl
+wget
+rsync
+openssh
+man-db
+unzip
+p7zip
+python
+python-pip
+cmake
+ninja
+jq
+ripgrep
+fd
+fzf
+tmux
+neovim
+htop
+btop

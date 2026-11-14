@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Report what the GPU stack can do on this machine. Read-only.
+set -uo pipefail
+
+ok()   { printf '  [ ok ] %s\n' "$*"; }
+bad()  { printf '  [FAIL] %s\n' "$*"; }
+note() { printf '  [ -- ] %s\n' "$*"; }
+
+echo "Kernel"
+ok "$(uname -r)"
+
+echo "Unified memory (GTT)"
+if [[ -r /sys/module/ttm/parameters/pages_limit ]]; then
+  p=$(cat /sys/module/ttm/parameters/pages_limit)
+  ok "ttm pages_limit = $p ($(( p / 262144 )) GiB)"
+else
+  note "ttm parameters not readable"
+fi
+for f in /sys/class/drm/card*/device/mem_info_gtt_total; do
+  [[ -r "$f" ]] && ok "GTT total: $(( $(cat "$f") / 1024 / 1024 / 1024 )) GiB"
+done
+for f in /sys/class/drm/card*/device/mem_info_vram_total; do
+  [[ -r "$f" ]] && note "VRAM carve-out: $(( $(cat "$f") / 1024 / 1024 )) MiB (BIOS UMA setting; minimum is best)"
+done
+
+echo "OpenGL / Vulkan (Mesa)"
+if command -v glxinfo >/dev/null; then
+  r=$(glxinfo -B 2>/dev/null | grep -E 'OpenGL renderer|OpenGL core profile version' | sed 's/^ *//')
+  [[ -n "$r" ]] && ok "$r" || note "glxinfo needs a running display"
+fi
+if command -v vulkaninfo >/dev/null; then
+  v=$(vulkaninfo --summary 2>/dev/null | grep -m1 deviceName | sed 's/.*= //')
+  [[ -n "$v" ]] && ok "Vulkan device: $v" || bad "no Vulkan device"
+fi
+
+echo "ROCm / HIP"
+if command -v rocminfo >/dev/null; then
+  targets=$(rocminfo 2>/dev/null | grep -oE 'gfx[0-9a-f]+' | sort -u | tr '\n' ' ')
+  if [[ -z "$targets" ]]; then
+    bad "rocminfo sees no GPU (are you in the render group? re-login after install)"
+  else
+    ok "agents: $targets"
+    [[ "$targets" == *gfx1151* ]] && ok "gfx1151 (Strix Halo) detected" || note "gfx1151 not reported"
+  fi
+else
+  bad "rocminfo not installed"
+fi
+# Whether the packaged math libraries ship kernels for this chip.
+for lib in rocblas hipblaslt; do
+  d=/opt/rocm/lib/$lib/library
+  if [[ -d "$d" ]]; then
+    if compgen -G "$d/*gfx1151*" >/dev/null; then ok "$lib has gfx1151 kernels"
+    else bad "$lib has no gfx1151 kernels (packaged ROCm build lacks this target)"; fi
+  fi
+done
+
+echo "OpenCL"
+if command -v clinfo >/dev/null; then
+  n=$(clinfo -l 2>/dev/null | grep -c Device)
+  (( n > 0 )) && ok "$n OpenCL device(s): $(clinfo -l 2>/dev/null | grep Device | sed 's/.*Device #[0-9]*: //' | tr '\n' ' ')" || bad "no OpenCL devices"
+fi

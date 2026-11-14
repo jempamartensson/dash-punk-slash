@@ -1,0 +1,16 @@
+# AMD Strix Halo (Radeon 8060S, gfx1151): graphics + compute.
+linux-firmware
+mesa
+mesa-utils
+vulkan-radeon
+vulkan-tools
+# ROCm runtime (HIP + OpenCL). Whether Arch's build includes gfx1151
+# kernels is checked by vfx-gpu-check after install.
+rocm-hip-runtime
+rocm-opencl-runtime
+rocminfo
+rocm-smi-lib
+clinfo
+# Monitoring
+amdgpu_top
+nvtop

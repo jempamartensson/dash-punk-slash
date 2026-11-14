@@ -1,0 +1,33 @@
+# Hyprland desktop, kept minimal and terminal-first.
+hyprland
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+hyprpaper
+hyprlock
+hypridle
+hyprpolkitagent
+waybar
+foot
+fuzzel
+mako
+# Qt apps on Wayland; VFX apps with bundled Qt run under XWayland.
+qt5-wayland
+qt6-wayland
+xorg-xwayland
+# Audio
+pipewire
+pipewire-pulse
+wireplumber
+pavucontrol
+# Login: text greeter
+greetd
+greetd-tuigreet
+# Fonts
+terminus-font
+ttf-dejavu
+noto-fonts
+# Utilities
+grim
+slurp
+wl-clipboard
+brightnessctl
