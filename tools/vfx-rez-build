@@ -50,6 +50,15 @@ clean_partial() {
 }
 pip_name() { local s="${1#pip:}"; echo "${s%%[=<>]*}"; }
 
+# rez-pip packages have variants on platform/arch/os, so those must exist.
+for sys_pkg in platform arch os; do
+  if [[ ! -d "$DEST/$sys_pkg" ]]; then
+    echo "binding rez system package: $sys_pkg"
+    rez-bind --install-path "$DEST" "$sys_pkg" > "$LOGS/bind-$sys_pkg.log" 2>&1 \
+      || { echo "rez-bind $sys_pkg failed, see $LOGS/bind-$sys_pkg.log" >&2; exit 1; }
+  fi
+done
+
 for item in "${ORDER[@]}"; do
   if [[ "$item" == pip:* ]]; then
     name="$(pip_name "$item")"; spec="${item#pip:}"
