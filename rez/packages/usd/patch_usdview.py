@@ -26,7 +26,8 @@ def _vfxApplyThemeColors():
         return
     dark = cfg.get("scheme", "dark", fallback="true").lower() == "true"
     alpha = {"ANCESTOR_OF_SELECTED": 60, "ANCESTOR_OF_SELECTED_HOVER": 110}
-    for group in (UIPrimTypeColors, UIPrimTreeColors, UIPropertyValueSourceColors):
+    for group in (UIBaseColors, UIPrimTypeColors, UIPrimTreeColors,
+                  UIPropertyValueSourceColors):
         section = cfg[group.__name__] if cfg.has_section(group.__name__) else {}
         for name in dir(group):
             stock = getattr(group, name)
@@ -53,7 +54,7 @@ def main(path):
     if MARK in text:
         print("usdview colours already patched:", path)
         return
-    for cls in ("class UIPrimTypeColors", "class UIPrimTreeColors",
+    for cls in ("class UIBaseColors", "class UIPrimTypeColors", "class UIPrimTreeColors",
                 "class UIPropertyValueSourceColors"):
         if cls not in text:
             sys.exit(f"{cls} not found in {path}; update patch_usdview.py for this USD version")
