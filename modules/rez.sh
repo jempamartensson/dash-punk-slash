@@ -12,8 +12,9 @@ else
   tmp="$(mktemp -d)"
   run curl -fL -o "$tmp/rez.tar.gz" "https://github.com/AcademySoftwareFoundation/rez/archive/refs/tags/$REZ_VERSION.tar.gz"
   run tar -xf "$tmp/rez.tar.gz" -C "$tmp"
-  run sudo python3 "$tmp/rez-$REZ_VERSION/install.py" /opt/rez
-  rm -rf "$tmp"
+  # -B: no __pycache__ in the (user-owned) temp dir, so cleanup works.
+  run sudo python3 -B "$tmp/rez-$REZ_VERSION/install.py" /opt/rez
+  sudo rm -rf "$tmp"
 fi
 
 # rez commands on PATH for every shell (foot starts non-login shells).
