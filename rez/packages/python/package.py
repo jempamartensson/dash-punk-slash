@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 name = "python"
 version = "3.13.18"
-description = "CPython (VFX Reference Platform CY2026: 3.13.x)"
+description = "CPython (VFX Reference Platform CY2026: 3.13.x), with a bundled OpenSSL 3.5 LTS"
 authors = ["vfx-linux"]
 
 requires = []
