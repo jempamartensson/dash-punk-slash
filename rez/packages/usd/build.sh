@@ -19,7 +19,10 @@ if old not in s:
 open(p, "w").write(s.replace(old, new, 1))
 PY
 
+# USD's FindOpenVDB only gives OpenVDB's own include dir, but openvdb.h
+# includes <Imath/half.h>, so hioOpenVDB needs Imath's headers too.
 cmake_build "$src" \
+  -DCMAKE_CXX_FLAGS="-isystem ${REZ_IMATH_ROOT:?}/include" \
   -DPXR_BUILD_TESTS=OFF -DPXR_BUILD_EXAMPLES=OFF -DPXR_BUILD_TUTORIALS=OFF -DPXR_BUILD_DOCUMENTATION=OFF \
   -DPXR_ENABLE_PYTHON_SUPPORT=ON -DPython3_EXECUTABLE="$(py)" \
   -DPXR_BUILD_IMAGING=ON -DPXR_BUILD_USD_IMAGING=ON -DPXR_BUILD_USDVIEW=ON \
