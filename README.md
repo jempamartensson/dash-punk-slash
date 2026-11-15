@@ -11,7 +11,7 @@ and a local AI assistant.
 |---|---|---|
 | 1 | Base system: AMD GPU + ROCm, unified memory, Hyprland desktop | written, untested on hardware |
 | 1b | Colour schemes (`vfx-theme`), isometric icon theme, VFX file types | written, tested in a sandbox |
-| 2 | rez + VFX Reference Platform libraries + themed usdview | recipes written, first VM build in progress |
+| 2 | rez + VFX Reference Platform libraries + themed usdview | built and tested in the VM |
 | 3 | VFX apps (Houdini, Nuke, Maya, Blender, Katana, Resolve) | planned |
 | 4 | Local LLM assistant (llama.cpp + agent) | planned |
 | 5 | Multi-user, docs, ISO | later |
@@ -111,7 +111,15 @@ searches first.
 
 **usdview** follows the colour scheme. The USD recipe patches usdview to read
 `$VFX_USDVIEW_QSS`, and `vfx-theme` writes that stylesheet
-(`~/.config/vfx-theme/usdview.qss`) for every scheme.
+(`~/.config/vfx-theme/usdview.qss`) for every scheme. usdview sets its prim
+tree and attribute colours in code, so `rez/packages/usd/patch_usdview.py`
+also makes it read `~/.config/vfx-theme/usdview-colors.ini`. Run
+`vfx-theme set <scheme>` once after installing to write both files.
+
+The usd package runs usdview through XWayland (`QT_QPA_PLATFORM=xcb`,
+`PYOPENGL_PLATFORM=glx`), because PySide6 can't create a GL context on
+native Wayland. In a VM it also sets `LIBGL_ALWAYS_SOFTWARE=1`, since Hydra
+Storm needs OpenGL 4.5 and virtual GPUs only offer 4.3.
 
 ## Settings
 

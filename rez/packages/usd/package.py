@@ -33,3 +33,18 @@ def commands():
     # usdview reads this stylesheet instead of its built-in one when it
     # exists (patched in build.sh); vfx-theme writes it per scheme.
     env.VFX_USDVIEW_QSS = "${HOME}/.config/vfx-theme/usdview.qss"
+    env.VFX_USDVIEW_COLORS = "${HOME}/.config/vfx-theme/usdview-colors.ini"
+    # usdview's GL viewport: PySide6 can't make a GL context on native
+    # Wayland, so run through XWayland, and keep PyOpenGL on GLX to match
+    # (it picks EGL whenever WAYLAND_DISPLAY is set).
+    env.QT_QPA_PLATFORM = "xcb"
+    env.PYOPENGL_PLATFORM = "glx"
+    # Storm needs OpenGL 4.5; VM GPUs (virgl) only offer 4.3, so use Mesa's
+    # software renderer there. Real GPUs are left alone.
+    try:
+        with open("/sys/class/dmi/id/sys_vendor") as f:
+            vendor = f.read()
+    except OSError:
+        vendor = ""
+    if any(v in vendor for v in ("QEMU", "VMware", "innotek")):
+        env.LIBGL_ALWAYS_SOFTWARE = "1"

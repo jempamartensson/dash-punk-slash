@@ -18,6 +18,8 @@ if old not in s:
     sys.exit("usdview stylesheet hook not found; update the patch for this USD version")
 open(p, "w").write(s.replace(old, new, 1))
 PY
+# Prim tree / attribute colours from the scheme too (they're set in code).
+python3 "$REZ_BUILD_SOURCE_PATH/patch_usdview.py" "$src/pxr/usdImaging/usdviewq/common.py"
 
 # USD's FindOpenVDB only gives OpenVDB's own include dir, but openvdb.h
 # includes <Imath/half.h>, so hioOpenVDB needs Imath's headers too.
