@@ -23,6 +23,8 @@ openjpeg2
 libdeflate
 # OpenVDB
 blosc
+# USD (OpenVDB support needs the Boost headers)
+boost
 # OpenColorIO (anything missing is fetched by its build)
 expat
 yaml-cpp
