@@ -11,7 +11,7 @@ and a local AI assistant.
 |---|---|---|
 | 1 | Base system: AMD GPU + ROCm, unified memory, Hyprland desktop | written, untested on hardware |
 | 1b | Colour schemes (`vfx-theme`), isometric icon theme, VFX file types | written, tested in a sandbox |
-| 2 | rez + VFX Reference Platform libraries + themed usdview | planned |
+| 2 | rez + VFX Reference Platform libraries + themed usdview | built and tested in the VM |
 | 3 | VFX apps (Houdini, Nuke, Maya, Blender, Katana, Resolve) | planned |
 | 4 | Local LLM assistant (llama.cpp + agent) | planned |
 | 5 | Multi-user, docs, ISO | later |
@@ -77,6 +77,49 @@ folders. Edit the drawing code and re-run `tools/make-icons.py` to regenerate.
 shows the selected (yellow) and drop-target (blue) states.
 
 The design study behind all this is `design/look-book.html`.
+
+- **rez** installs rez 3.5 into `/opt/rez`, the system libraries the VFX stack
+  needs, and `vfx-rez-build`. It also creates the shared package repo
+  `/opt/vfx/rez/packages`.
+
+## VFX libraries (rez)
+
+The libraries are built from source as rez packages, pinned to the
+[VFX Reference Platform](https://vfxplatform.com) CY2026:
+
+| Package | Version | | Package | Version |
+|---|---|---|---|---|
+| python | 3.13.18 | | ocio | 2.5.2 |
+| PySide6 (Qt 6.8) | 6.8.3 (rez-pip) | | oiio | 3.1.19.0 |
+| numpy | 2.3.x (rez-pip) | | ptex | 2.4.3 |
+| tbb (oneTBB) | 2022.3.0 | | alembic | 1.8.12 |
+| imath | 3.2.3 | | materialx | 1.39.5 |
+| openexr | 3.4.18 | | opensubdiv | 3.7.0 |
+| openvdb | 13.2.0 | | usd | 26.11.1 |
+
+```sh
+vfx-rez-build --list            # build order and what's installed
+vfx-rez-build                   # build everything missing (about an hour)
+rez env usd -- usdview shot.usda
+```
+
+Each recipe is `rez/packages/<name>/package.py` plus a `build.sh` that
+downloads the pinned release and builds it with CMake/Ninja. Source
+tarballs are cached in `~/.cache/vfx-src` and checked against
+`rez/checksums.txt`. Your own packages go in `~/packages`, which rez
+searches first.
+
+**usdview** follows the colour scheme. The USD recipe patches usdview to read
+`$VFX_USDVIEW_QSS`, and `vfx-theme` writes that stylesheet
+(`~/.config/vfx-theme/usdview.qss`) for every scheme. usdview sets its prim
+tree and attribute colours in code, so `rez/packages/usd/patch_usdview.py`
+also makes it read `~/.config/vfx-theme/usdview-colors.ini`. Run
+`vfx-theme set <scheme>` once after installing to write both files.
+
+The usd package runs usdview through XWayland (`QT_QPA_PLATFORM=xcb`,
+`PYOPENGL_PLATFORM=glx`), because PySide6 can't create a GL context on
+native Wayland. In a VM it also sets `LIBGL_ALWAYS_SOFTWARE=1`, since Hydra
+Storm needs OpenGL 4.5 and virtual GPUs only offer 4.3.
 
 ## Settings
 

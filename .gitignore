@@ -1,2 +1,5 @@
 config.sh
 *.vfx-backup
+
+# rez-build scratch dirs
+rez/packages/*/build/

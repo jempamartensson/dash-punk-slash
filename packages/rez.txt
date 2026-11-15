@@ -1,0 +1,47 @@
+# Build tools and system libraries for the rez VFX stack (rez/packages).
+cmake
+ninja
+git
+curl
+pkgconf
+# CPython build
+openssl
+libffi
+sqlite
+bzip2
+xz
+zlib
+readline
+gdbm
+# Image formats for OpenImageIO
+libjpeg-turbo
+libpng
+libtiff
+libwebp
+giflib
+openjpeg2
+libdeflate
+# OpenVDB
+blosc
+# USD (OpenVDB support needs the Boost headers)
+boost
+# OpenColorIO (anything missing is fetched by its build)
+expat
+yaml-cpp
+# OpenImageIO header-only deps
+fmt
+robin-map
+# OpenGL / X11 / Wayland for Hydra Storm and the PySide6 (Qt 6.8) wheels
+libglvnd
+libx11
+libxt
+libxrandr
+libxcursor
+libxinerama
+libxi
+libxkbcommon-x11
+xcb-util-cursor
+xcb-util-wm
+xcb-util-image
+xcb-util-keysyms
+xcb-util-renderutil
