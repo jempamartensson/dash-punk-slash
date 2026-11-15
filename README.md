@@ -97,11 +97,26 @@ committed to git.
 | Super+Shift+T | next colour scheme |
 | Print | screenshot region to clipboard |
 
-The keyboard layout is set in `dotfiles/hypr/hyprland.conf` (`kb_layout = us`).
+The keyboard layout is set in `dotfiles/hypr/hyprland.lua` (`kb_layout = "us"`).
+
+### Hyprland config is Lua
+
+Hyprland 0.57 and later only read `~/.config/hypr/hyprland.lua`. The old
+`hyprland.conf` format is no longer parsed, and if the Lua file is missing
+Hyprland writes a stock one, which gives you an empty desktop. Our config is
+`dotfiles/hypr/hyprland.lua`, with window rules in `rules.lua` and colours
+loaded from `~/.config/vfx-theme/hyprland.lua`. Check it after editing:
+
+```sh
+Hyprland -c ~/.config/hypr/hyprland.lua --verify-config
+```
+
+In a VM, your host desktop may take the Super key. Click into the VM window
+first, or use the viewer's Send Key menu.
 
 ## Known open questions
 
 - Does Arch's packaged ROCm include gfx1151 kernels? `vfx-gpu-check` reports
   this. If it doesn't, step 2 will add a ROCm build that does.
-- The Hyprland window-rule syntax changes between releases. Check
-  `dotfiles/hypr/rules.conf` on first boot.
+- Hyprland's config API changes between releases. `--verify-config` (above)
+  catches unknown options, rules and dispatchers.
