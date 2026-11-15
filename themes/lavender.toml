@@ -1,0 +1,21 @@
+# Lavender: pale violet chrome, white fields. Highest contrast for data.
+name = "Lavender"
+dark = false
+
+[colors]
+desk        = "#77719a"
+chrome      = "#d6d4df"
+hi          = "#f7f6fb"
+lo          = "#918da6"
+text        = "#121018"
+muted       = "#48445a"
+field       = "#ffffff"
+sel         = "#3b3080"
+sel_text    = "#ffffff"
+wm          = "#5b50a2"
+wm_text     = "#ffffff"
+wm_idle     = "#aeaabf"
+wm_idle_text= "#25213a"
+accent      = "#3b3080"
+term_bg     = "#1b1928"
+term_fg     = "#ece8f4"

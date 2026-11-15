@@ -24,8 +24,12 @@ greetd
 greetd-tuigreet
 # Fonts
 terminus-font
+# Nimbus Sans: free Helvetica-metric UI font (URW base35)
+gsfonts
 ttf-dejavu
 noto-fonts
+# Icons + file types
+shared-mime-info
 # Utilities
 grim
 slurp

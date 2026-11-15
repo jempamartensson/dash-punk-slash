@@ -76,19 +76,22 @@ write_root_file() {
   return 0
 }
 
-# Symlink a file or directory from the repo's dotfiles into $HOME.
+# Symlink a repo path (relative to the repo root) to an absolute destination.
 # An existing non-link target is moved aside to *.vfx-backup first.
-link_dotfile() {
-  local src="$REPO_DIR/dotfiles/$1" dst="$HOME/$2"
+link_repo_path() {
+  local src="$REPO_DIR/$1" dst="$2" show="${2/#$HOME/\~}"
   if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
-    info "linked: ~/$2"
+    info "linked: $show"
     return
   fi
   if [[ -e "$dst" && ! -L "$dst" ]]; then
-    warn "backing up existing ~/$2 to ~/$2.vfx-backup"
+    warn "backing up existing $show to $show.vfx-backup"
     run mv "$dst" "$dst.vfx-backup"
   fi
   run mkdir -p "$(dirname "$dst")"
   run ln -sfn "$src" "$dst"
-  info "linked: ~/$2 -> dotfiles/$1"
+  info "linked: $show -> $1"
 }
+
+# Symlink something from dotfiles/ into $HOME.
+link_dotfile() { link_repo_path "dotfiles/$1" "$HOME/$2"; }
