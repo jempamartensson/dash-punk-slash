@@ -1,0 +1,21 @@
+# Slate: slate workspace, warm grey chrome, gold focus frame. Default.
+name = "Slate"
+dark = false
+
+[colors]
+desk        = "#4a5a6a"   # workspace / wallpaper colour
+chrome      = "#b8b8b4"   # basic background of panels and windows
+hi          = "#e4e4e0"   # bevel highlight (top-left edges)
+lo          = "#74746c"   # bevel shadow (bottom-right edges)
+text        = "#161616"
+muted       = "#45453f"
+field       = "#e8e6dc"   # text fields, lists, wells
+sel         = "#4a5a6a"   # selection fill
+sel_text    = "#f4f0e4"
+wm          = "#d4a84a"   # active window frame / title
+wm_text     = "#1a1a1a"
+wm_idle     = "#8a949e"   # inactive window frame
+wm_idle_text= "#1c2026"
+accent      = "#7a4e0c"
+term_bg     = "#1c242c"
+term_fg     = "#e8e4d8"

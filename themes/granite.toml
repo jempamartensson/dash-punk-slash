@@ -1,0 +1,21 @@
+# Granite: dark chrome, ivory text, gold selection. For dark grading rooms.
+name = "Granite"
+dark = true
+
+[colors]
+desk        = "#1b2026"
+chrome      = "#383f48"
+hi          = "#58616c"
+lo          = "#1c2025"
+text        = "#ebe6d9"
+muted       = "#aba596"
+field       = "#252a30"
+sel         = "#c9a24a"
+sel_text    = "#17150f"
+wm          = "#647a92"
+wm_text     = "#f4f1e8"
+wm_idle     = "#424a54"
+wm_idle_text= "#b8b4a8"
+accent      = "#e2bd66"
+term_bg     = "#15191d"
+term_fg     = "#ebe6d9"

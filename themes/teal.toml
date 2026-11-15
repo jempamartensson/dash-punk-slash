@@ -1,0 +1,21 @@
+# Teal: blue-green chrome with a deep teal workspace.
+name = "Teal"
+dark = false
+
+[colors]
+desk        = "#2c5b5f"
+chrome      = "#b6c3c1"
+hi          = "#e6eeec"
+lo          = "#687a77"
+text        = "#0f1f1e"
+muted       = "#3a4e4c"
+field       = "#e9f0ee"
+sel         = "#2c6a6d"
+sel_text    = "#f2fbf9"
+wm          = "#58a9a4"
+wm_text     = "#062220"
+wm_idle     = "#8a9b99"
+wm_idle_text= "#142321"
+accent      = "#155f5b"
+term_bg     = "#13201f"
+term_fg     = "#e4ece6"

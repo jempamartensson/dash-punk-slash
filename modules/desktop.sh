@@ -6,8 +6,6 @@ install_pkgs desktop
 link_dotfile hypr        .config/hypr
 link_dotfile waybar      .config/waybar
 link_dotfile foot        .config/foot
-link_dotfile fuzzel      .config/fuzzel
-link_dotfile mako        .config/mako
 
 if [[ "$VFX_ENABLE_GREETER" == 1 ]]; then
   # Newer Hyprland ships a start-hyprland wrapper; fall back to the binary.

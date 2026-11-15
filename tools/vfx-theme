@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""vfx-theme: switch the desktop colour scheme.
+
+Schemes live in themes/<name>.toml. Each file in templates/ is rendered with
+the scheme's colours into ~/.config/vfx-theme/, which the desktop config
+files read from. Running apps are told to reload where they support it.
+
+  vfx-theme list              show schemes (* marks the current one)
+  vfx-theme set <name>        render and apply a scheme
+  vfx-theme next              apply the next scheme (bound to Super+Shift+T)
+  vfx-theme current           print the current scheme name
+  vfx-theme render <name> DIR render into DIR only (no reload), for testing
+"""
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tomllib
+from pathlib import Path
+
+REPO = Path(os.environ.get("VFX_REPO_DIR") or Path(os.path.realpath(__file__)).parent.parent)
+THEMES = REPO / "themes"
+TEMPLATES = REPO / "templates"
+XDG_CONFIG = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+OUT = XDG_CONFIG / "vfx-theme"
+
+REQUIRED = [
+    "desk", "chrome", "hi", "lo", "text", "muted", "field", "sel", "sel_text",
+    "wm", "wm_text", "wm_idle", "wm_idle_text", "accent", "term_bg", "term_fg",
+]
+HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
+PLACEHOLDER = re.compile(r"\{\{\s*([a-z_]+)(?::([a-z]+))?\s*\}\}")
+
+
+def die(msg: str) -> None:
+    print(f"vfx-theme: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def load(name: str) -> dict:
+    path = THEMES / f"{name}.toml"
+    if not path.is_file():
+        die(f"no scheme '{name}' (try: vfx-theme list)")
+    with path.open("rb") as f:
+        data = tomllib.load(f)
+    colors = data.get("colors", {})
+    missing = [k for k in REQUIRED if k not in colors]
+    if missing:
+        die(f"{path.name}: missing colours: {', '.join(missing)}")
+    bad = [k for k, v in colors.items() if not HEX.match(str(v))]
+    if bad:
+        die(f"{path.name}: not #rrggbb: {', '.join(bad)}")
+    return {"name": data.get("name", name), "dark": bool(data.get("dark", False)),
+            **{k: v.lower() for k, v in colors.items()}}
+
+
+def fmt(scheme: dict, key: str, flt: str | None, where: str) -> str:
+    if key not in scheme:
+        die(f"{where}: unknown token '{key}'")
+    v = scheme[key]
+    if isinstance(v, bool):
+        return str(int(v)) if flt == "int" else str(v).lower()
+    if flt is None:
+        return v                    # #rrggbb
+    if flt == "bare":
+        return v[1:]                # rrggbb  (Hyprland rgb(), foot)
+    if flt == "rgba":
+        return v[1:] + "ff"         # rrggbbaa (fuzzel)
+    die(f"{where}: unknown filter ':{flt}'")
+    return ""
+
+
+def render(scheme: dict, out: Path) -> list[Path]:
+    out.mkdir(parents=True, exist_ok=True)
+    written = []
+    for tpl in sorted(TEMPLATES.iterdir()):
+        if not tpl.is_file():
+            continue
+        text = tpl.read_text()
+        result = PLACEHOLDER.sub(lambda m: fmt(scheme, m.group(1), m.group(2), tpl.name), text)
+        dest = out / tpl.name
+        tmp = dest.with_suffix(dest.suffix + ".tmp")
+        tmp.write_text(result)
+        tmp.replace(dest)
+        written.append(dest)
+    return written
+
+
+def current() -> str | None:
+    f = OUT / "current"
+    return f.read_text().strip() if f.is_file() else None
+
+
+def reload_apps() -> None:
+    def quiet(*cmd: str) -> None:
+        if shutil.which(cmd[0]):
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
+        quiet("hyprctl", "reload")
+    quiet("pkill", "-SIGUSR2", "-x", "waybar")   # waybar reloads style on SIGUSR2
+    quiet("makoctl", "reload")
+    # foot and fuzzel read their config at start: new windows pick it up.
+
+
+def main(argv: list[str]) -> None:
+    if not argv or argv[0] in ("-h", "--help"):
+        print(__doc__.strip())
+        return
+    cmd, args = argv[0], argv[1:]
+    names = sorted(p.stem for p in THEMES.glob("*.toml"))
+    if cmd == "list":
+        cur = current()
+        for n in names:
+            s = load(n)
+            print(f"{'*' if n == cur else ' '} {n:<10} {'dark ' if s['dark'] else 'light'}  {s['name']}")
+    elif cmd == "current":
+        print(current() or "(none)")
+    elif cmd in ("set", "next") and len(args) == (1 if cmd == "set" else 0):
+        if cmd == "next":
+            cur = current()
+            args = [names[(names.index(cur) + 1) % len(names)] if cur in names else names[0]]
+        scheme = load(args[0])
+        files = render(scheme, OUT)
+        (OUT / "current").write_text(args[0] + "\n")
+        reload_apps()
+        print(f"vfx-theme: {scheme['name']} applied ({len(files)} files in {OUT})")
+    elif cmd == "render" and len(args) == 2:
+        files = render(load(args[0]), Path(args[1]))
+        for f in files:
+            print(f)
+    else:
+        die("usage: vfx-theme list | current | set <name> | next | render <name> <dir>")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

@@ -6,7 +6,7 @@
 #
 # Usage:
 #   ./install.sh                 run all modules
-#   ./install.sh gpu desktop     run only the named modules
+#   ./install.sh desktop theme   run only the named modules
 #   ./install.sh --dry-run       print what would happen, change nothing
 #   ./install.sh --list          list modules
 set -euo pipefail
@@ -16,7 +16,7 @@ export REPO_DIR
 # shellcheck source=lib/common.sh
 source "$REPO_DIR/lib/common.sh"
 
-MODULES=(preflight base gpu desktop)
+MODULES=(preflight base gpu desktop theme)
 
 selected=()
 for arg in "$@"; do

@@ -13,3 +13,7 @@
 
 # Terminal used by keybindings and the launcher.
 : "${VFX_TERMINAL:=foot}"
+
+# Colour scheme applied on first install: slate, teal, granite or lavender.
+# Re-running the installer keeps whatever you picked later with vfx-theme.
+: "${VFX_SCHEME:=slate}"
