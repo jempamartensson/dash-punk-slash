@@ -29,7 +29,7 @@ def commands():
     env.LD_LIBRARY_PATH.prepend("{root}/lib")
     env.CMAKE_PREFIX_PATH.prepend("{root}")
     env.PKG_CONFIG_PATH.prepend("{root}/lib/pkgconfig")
-    env.PYTHONPATH.prepend("{root}/lib/python")
+    env.PYTHONPATH.prepend("{root}/lib/python3.13/site-packages")
     # usdview reads this stylesheet instead of its built-in one when it
     # exists (patched in build.sh); vfx-theme writes it per scheme.
     env.VFX_USDVIEW_QSS = "${HOME}/.config/vfx-theme/usdview.qss"
