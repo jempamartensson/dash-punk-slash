@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Build the VFX library stack as rez packages, in dependency order.
+#
+#   vfx-rez-build                build everything that isn't installed yet
+#   vfx-rez-build openexr usd    build just these (and nothing else)
+#   vfx-rez-build --list         show the build order and what's installed
+#   vfx-rez-build --force usd    rebuild even if installed
+#
+# Packages install to /opt/vfx/rez/packages. A full build takes about an
+# hour on 16 cores; USD is the long one. Logs: ~/.cache/vfx-src/logs/.
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+RECIPES="$REPO/rez/packages"
+DEST="${VFX_REZ_PACKAGES:-/opt/vfx/rez/packages}"
+LOGS="${VFX_SRC_CACHE:-$HOME/.cache/vfx-src}/logs"
+mkdir -p "$LOGS"
+
+# Build order. "pip:" entries are installed with rez-pip into the rez python.
+ORDER=(
+  python
+  "pip:PySide6==6.8.3"
+  "pip:PyOpenGL>=3.1.7"
+  "pip:numpy>=2.3,<2.4"
+  tbb imath openexr ptex opensubdiv openvdb ocio oiio alembic materialx
+  usd
+)
+
+command -v rez >/dev/null || { echo "rez not found: run ./install.sh rez first" >&2; exit 1; }
+
+force=0; list=0; only=()
+for a in "$@"; do
+  case "$a" in
+    --force) force=1 ;;
+    --list) list=1 ;;
+    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
+    *) only+=("$a") ;;
+  esac
+done
+
+version_of() { sed -n 's/^version = "\(.*\)"/\1/p' "$RECIPES/$1/package.py"; }
+installed() { [[ -d "$DEST/$1/$2" ]]; }
+pip_name() { local s="${1#pip:}"; echo "${s%%[=<>]*}"; }
+
+for item in "${ORDER[@]}"; do
+  if [[ "$item" == pip:* ]]; then
+    name="$(pip_name "$item")"; spec="${item#pip:}"
+    if [[ ${#only[@]} -gt 0 && " ${only[*]} " != *" $name "* ]]; then continue; fi
+    have="$(ls "$DEST/$name" 2>/dev/null | sort -V | tail -1 || true)"
+    if [[ $list == 1 ]]; then printf '  %-12s %-14s %s\n' "$name" "(pip $spec)" "${have:+installed $have}"; continue; fi
+    if [[ -n "$have" && $force == 0 ]]; then echo "== $name $have: installed"; continue; fi
+    echo "== rez-pip $spec"
+    rez-pip --install "$spec" --python-version 3.13 --prefix "$DEST" 2>&1 | tee "$LOGS/$name.log"
+    continue
+  fi
+  ver="$(version_of "$item")"
+  if [[ ${#only[@]} -gt 0 && " ${only[*]} " != *" $item "* ]]; then continue; fi
+  if [[ $list == 1 ]]; then printf '  %-12s %-14s %s\n' "$item" "$ver" "$(installed "$item" "$ver" && echo installed)"; continue; fi
+  if installed "$item" "$ver" && [[ $force == 0 ]]; then echo "== $item $ver: installed"; continue; fi
+  echo "== building $item $ver (log: $LOGS/$item.log)"
+  start=$SECONDS
+  ( cd "$RECIPES/$item" && rez-build --install --prefix "$DEST" --clean ) > "$LOGS/$item.log" 2>&1 || {
+    echo "!! $item failed. Last lines of $LOGS/$item.log:" >&2
+    tail -30 "$LOGS/$item.log" >&2
+    exit 1
+  }
+  echo "   done in $(( (SECONDS - start) / 60 )) min"
+done
+
+if [[ $list == 0 && -s "${VFX_SRC_CACHE:-$HOME/.cache/vfx-src}/new-checksums.txt" ]]; then
+  echo
+  echo "New source checksums were recorded; add them to rez/checksums.txt:"
+  sort -u "${VFX_SRC_CACHE:-$HOME/.cache/vfx-src}/new-checksums.txt"
+fi

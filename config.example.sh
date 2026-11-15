@@ -17,3 +17,6 @@
 # Colour scheme applied on first install: slate, teal, granite or lavender.
 # Re-running the installer keeps whatever you picked later with vfx-theme.
 : "${VFX_SCHEME:=slate}"
+
+# Shared rez package repository for the VFX library stack.
+: "${VFX_REZ_PACKAGES:=/opt/vfx/rez/packages}"

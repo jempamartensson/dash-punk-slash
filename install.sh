@@ -16,7 +16,7 @@ export REPO_DIR
 # shellcheck source=lib/common.sh
 source "$REPO_DIR/lib/common.sh"
 
-MODULES=(preflight base gpu desktop theme)
+MODULES=(preflight base gpu desktop theme rez)
 
 selected=()
 for arg in "$@"; do
