@@ -13,7 +13,11 @@ set -euo pipefail
 : "${REZ_BUILD_PATH:?}"
 : "${REZ_BUILD_INSTALL_PATH:?}"
 REZ_BUILD_INSTALL="${REZ_BUILD_INSTALL:-0}"
-JOBS="${REZ_BUILD_THREAD_COUNT:-$(nproc)}"
+# Parallel jobs: one per core, but no more than one per 2 GB of RAM, because
+# heavy C++ (OpenVDB, USD) needs 1-2 GB per compiler. Override: VFX_BUILD_JOBS.
+mem_jobs=$(( $(awk '/MemTotal/ {print $2}' /proc/meminfo) / 1024 / 1024 / 2 ))
+(( mem_jobs >= 1 )) || mem_jobs=1
+JOBS="${VFX_BUILD_JOBS:-$(( $(nproc) < mem_jobs ? $(nproc) : mem_jobs ))}"
 
 RECIPES="$(cd "$REZ_BUILD_SOURCE_PATH/../.." && pwd)"   # rez/
 CACHE="${VFX_SRC_CACHE:-$HOME/.cache/vfx-src}"
