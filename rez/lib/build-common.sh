@@ -13,10 +13,10 @@ set -euo pipefail
 : "${REZ_BUILD_PATH:?}"
 : "${REZ_BUILD_INSTALL_PATH:?}"
 REZ_BUILD_INSTALL="${REZ_BUILD_INSTALL:-0}"
-# Parallel jobs: one per core, but no more than one per 3 GB of RAM, because
-# heavy C++ (OpenVDB instantiations, USD) peaks at 2.5-3.5 GB per compiler.
+# Parallel jobs: one per core, but no more than one per 4 GB of RAM, because
+# heavy C++ (OpenVDB instantiations, USD) peaks at 2.5-4 GB per compiler.
 # Override: VFX_BUILD_JOBS.
-mem_jobs=$(( $(awk '/MemTotal/ {print $2}' /proc/meminfo) / 1024 / 1024 / 3 ))
+mem_jobs=$(( $(awk '/MemTotal/ {print $2}' /proc/meminfo) / 1024 / 1024 / 4 ))
 (( mem_jobs >= 1 )) || mem_jobs=1
 JOBS="${VFX_BUILD_JOBS:-$(( $(nproc) < mem_jobs ? $(nproc) : mem_jobs ))}"
 
