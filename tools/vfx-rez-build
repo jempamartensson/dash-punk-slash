@@ -39,7 +39,15 @@ for a in "$@"; do
 done
 
 version_of() { sed -n 's/^version = "\(.*\)"/\1/p' "$RECIPES/$1/package.py"; }
-installed() { [[ -d "$DEST/$1/$2" ]]; }
+# Installed = rez wrote package.py and no interrupted build left its marker.
+installed() { [[ -f "$DEST/$1/$2/package.py" && ! -e "$DEST/$1/.building$2" ]]; }
+# Remove what an interrupted build left behind so rez-build starts clean.
+clean_partial() {
+  if [[ -e "$DEST/$1/.building$2" || ( -d "$DEST/$1/$2" && ! -f "$DEST/$1/$2/package.py" ) ]]; then
+    echo "   removing partial install of $1 $2"
+    rm -rf "${DEST:?}/$1/$2" "${DEST:?}/$1/.building$2"
+  fi
+}
 pip_name() { local s="${1#pip:}"; echo "${s%%[=<>]*}"; }
 
 for item in "${ORDER[@]}"; do
@@ -58,6 +66,7 @@ for item in "${ORDER[@]}"; do
   if [[ $list == 1 ]]; then printf '  %-12s %-14s %s\n' "$item" "$ver" "$(installed "$item" "$ver" && echo installed)"; continue; fi
   if installed "$item" "$ver" && [[ $force == 0 ]]; then echo "== $item $ver: installed"; continue; fi
   echo "== building $item $ver (log: $LOGS/$item.log)"
+  clean_partial "$item" "$ver"
   start=$SECONDS
   ( cd "$RECIPES/$item" && rez-build --install --prefix "$DEST" --clean ) > "$LOGS/$item.log" 2>&1 || {
     echo "!! $item failed. Last lines of $LOGS/$item.log:" >&2
